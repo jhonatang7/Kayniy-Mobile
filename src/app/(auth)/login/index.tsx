@@ -5,13 +5,14 @@ import { Text, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 
 import { Button, Input } from '@/src/modules/@core/view/components';
-import { StudentService } from '@/src/modules/student/data/services/student_service';
-import { AuthBrand } from '@/src/modules/student/view/components/AuthBrand';
-import { AuthScreen } from '@/src/modules/student/view/components/AuthScreen';
+import { AuthService } from '@/src/modules/auth/data/services/auth_service';
+import { useAuth } from '@/src/modules/auth/providers/auth-provider';
+import { AuthBrand } from '@/src/modules/auth/view/components/AuthBrand';
+import { AuthScreen } from '@/src/modules/auth/view/components/AuthScreen';
 import {
-    loginSchema,
-    type LoginFormData,
-} from '@/src/modules/student/view/schemas/login.schema';
+  loginSchema,
+  type LoginFormData,
+} from '@/src/modules/auth/view/schemas/login.schema';
 
 export default function LoginScreen() {
   const {
@@ -22,7 +23,8 @@ export default function LoginScreen() {
     resolver: zodResolver(loginSchema),
     defaultValues: { email: '', password: '' },
   });
-  const { mutate: login, isPending } = StudentService.useLogin();
+  const { mutate: login, isPending } = AuthService.useLogin();
+  const { refreshSession } = useAuth();
 
   const onSubmit = (data: LoginFormData) => {
     Toast.show({
@@ -32,13 +34,14 @@ export default function LoginScreen() {
     });
 
     login(data, {
-      onSuccess: () => {
+      onSuccess: async (data) => {
+        const user = await refreshSession(data.user);
         Toast.show({
           type: 'success',
           text1: 'Sesión iniciada',
           text2: 'Bienvenido a Kayniy.',
         });
-        router.replace('/(tabs)/home');
+        router.replace(user?.isFirstLogin ? '/(first-login)' : '/(tabs)/home');
       },
       onError: (error) => {
         Toast.show({
@@ -105,10 +108,14 @@ export default function LoginScreen() {
           fullWidth
           onPress={() => void handleSubmit(onSubmit, onInvalid)()}
           disabled={isSubmitting || isPending}
-          className="mt-2"
+          className="mt-2 mb-2"
         >
           {isPending ? 'Iniciando sesión...' : 'Iniciar sesión'}
         </Button>
+
+        <Link href="/(auth)/forgot-password" className="mt-4 text-center font-semibold text-[#1039B8]">
+          ¿Olvidaste tu contraseña?
+        </Link>
 
         <View className="mt-6 flex-row justify-center">
           <Text className="text-slate-500">¿Aún no tienes una cuenta? </Text>
