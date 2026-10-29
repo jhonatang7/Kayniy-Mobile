@@ -5,13 +5,14 @@ import { Text, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 
 import { Button, Input } from '@/src/modules/@core/view/components';
-import { StudentService } from '@/src/modules/student/data/services/student_service';
-import { AuthBrand } from '@/src/modules/student/view/components/AuthBrand';
-import { AuthScreen } from '@/src/modules/student/view/components/AuthScreen';
+import { AuthService } from '@/src/modules/auth/data/services/auth_service';
+import { useAuth } from '@/src/modules/auth/providers/auth-provider';
+import { AuthBrand } from '@/src/modules/auth/view/components/AuthBrand';
+import { AuthScreen } from '@/src/modules/auth/view/components/AuthScreen';
 import {
-    registerSchema,
-    type RegisterFormData,
-} from '@/src/modules/student/view/schemas/register.schema';
+  registerSchema,
+  type RegisterFormData,
+} from '@/src/modules/auth/view/schemas/register.schema';
 
 export default function RegisterScreen() {
   const {
@@ -27,7 +28,8 @@ export default function RegisterScreen() {
       phoneNumber: '',
     },
   });
-  const { mutate: register, isPending } = StudentService.useRegister();
+  const { mutate: register, isPending } = AuthService.useRegister();
+  const { refreshSession } = useAuth();
 
   const onSubmit = (data: RegisterFormData) => {
     Toast.show({
@@ -37,7 +39,8 @@ export default function RegisterScreen() {
     });
 
     register(data, {
-      onSuccess: () => {
+      onSuccess: async () => {
+        await refreshSession();
         Toast.show({
           type: 'success',
           text1: 'Cuenta creada',
