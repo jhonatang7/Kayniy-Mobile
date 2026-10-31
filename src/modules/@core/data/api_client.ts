@@ -1,7 +1,8 @@
 import { create, type AxiosError, type InternalAxiosRequestConfig } from 'axios';
 
-import { AuthClient } from '@/src/modules/auth/data/client/auth_client';
 import { TokenClient } from '@/src/modules/auth/data/client/token_client';
+import type { AuthResponse } from '@/src/modules/auth/main/types/auth.types';
+import { API_ENDPOINTS } from './endpoints';
 import { storage } from './storage';
 
 const apiUrl = process.env.EXPO_PUBLIC_API_URL?.trim() ?? 'http://192.168.1.68:3000/api';
@@ -27,6 +28,15 @@ const RETRY_HEADER = 'x-auth-retry';
 export const addWithoutTokenHeader = () => ({ [WITHOUT_TOKEN_HEADER]: 'true' });
 export const addRefreshTokenHeader = () => ({ [REFRESH_TOKEN_HEADER]: 'true' });
 
+const refreshClient = create({
+  baseURL: apiUrl,
+  timeout: 15000,
+  headers: {
+    'Content-Type': 'application/json',
+    [REFRESH_TOKEN_HEADER]: 'true',
+  },
+});
+
 let refreshPromise: Promise<void> | null = null;
 
 const hasHeader = (config: InternalAxiosRequestConfig, name: string) => {
@@ -45,9 +55,16 @@ const addToken = (config: InternalAxiosRequestConfig) => {
 
 const updateAccessToken = async () => {
   if (!refreshPromise) {
-    refreshPromise = AuthClient.refreshToken().then(() => undefined).finally(() => {
-      refreshPromise = null;
-    });
+    refreshPromise = refreshClient
+      .get<AuthResponse>(`${API_ENDPOINTS.AUTH}/refresh`, {
+        withCredentials: true,
+      })
+      .then(async (response) => {
+        await TokenClient.saveTokens(response.data);
+      })
+      .finally(() => {
+        refreshPromise = null;
+      });
   }
   await refreshPromise;
 };

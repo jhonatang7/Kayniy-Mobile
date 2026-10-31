@@ -1,25 +1,25 @@
 import apiClient, {
-    addRefreshTokenHeader,
-    addWithoutTokenHeader,
+  addRefreshTokenHeader,
+  addWithoutTokenHeader,
 } from '@/src/modules/@core/data/api_client';
 import { API_ENDPOINTS } from '@/src/modules/@core/data/endpoints';
 import type {
-    AuthMessageResponse,
-    AuthResponse,
-    ChangePasswordRequest,
-    FirstLoginPasswordRequest,
-    ForgotPasswordRequest,
-    LoginRequest,
-    RegisterRequest,
-    ResetPasswordRequest,
-    UpdateProfileRequest,
-    User,
+  AuthMessageResponse,
+  AuthResponse,
+  ChangePasswordRequest,
+  FirstLoginPasswordRequest,
+  ForgotPasswordRequest,
+  LoginRequest,
+  RegisterRequest,
+  ResetPasswordRequest,
+  UpdateProfileRequest,
+  User,
 } from '../../main/types/auth.types';
 import { TokenClient } from './token_client';
 
 export const AuthClient = {
   async login(data: LoginRequest) {
-    const response = await apiClient.post<AuthResponse>(`${API_ENDPOINTS.AUTH}/login`, data, {
+    const response = await apiClient.post<AuthResponse>(`${API_ENDPOINTS.AUTH}/login-mobile`, data, {
       headers: addWithoutTokenHeader(),
       withCredentials: true,
     });
