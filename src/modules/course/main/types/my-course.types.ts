@@ -1,5 +1,6 @@
 export interface MyCourse {
   id: string;
+  enrollment_course_id: string;
   name: string;
   description: string;
   level: 'Basic' | 'Intermediate' | 'Advanced' | string;
@@ -12,4 +13,5 @@ export interface MyCourse {
   completedLessons: number;
   totalExams: number;
   completedExams: number;
+  firstLessonId: string;
 }

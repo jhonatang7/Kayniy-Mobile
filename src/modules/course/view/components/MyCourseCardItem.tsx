@@ -32,8 +32,8 @@ export function MyCourseCardItem({
   return (
     <Link
       href={{
-        pathname: '/search/[courseId]',
-        params: { courseId: course.id },
+        pathname: '/my-courses/[my-courseId]/lesson/[lessonId]',
+        params: { 'my-courseId': `${course.enrollment_course_id}`, 'lessonId': `${course.firstLessonId}` }
       }}
       asChild
     >
