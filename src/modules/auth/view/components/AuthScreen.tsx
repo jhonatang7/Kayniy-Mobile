@@ -8,16 +8,18 @@ import { useAuthGuard } from '../guards/auth-gate';
 export function AuthScreen({
   children,
   scrollable = true,
+  edges = ['top', 'bottom'],
 }: {
   children: ReactNode;
   scrollable?: boolean;
+  edges?: ('top' | 'bottom' | 'left' | 'right')[];
 }) {
   const { isLoading } = useAuthGuard();
 
   if (isLoading) return null;
 
   return (
-    <SafeAreaView className="flex-1 bg-slate-50" edges={['top', 'bottom']}>
+    <SafeAreaView className="flex-1 bg-slate-50" edges={edges}>
       {scrollable ? (
         <KeyboardAwareScrollView
           bottomOffset={32}
