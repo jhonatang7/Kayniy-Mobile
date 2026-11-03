@@ -18,6 +18,16 @@ export interface Course {
   acronym: string;
 }
 
+export interface RecommendedCourse {
+  id: string;
+  name: string;
+  description: string;
+  level: string;
+  registeredDate: string;
+  isDeleted: boolean;
+  community: Community;
+}
+
 export interface Lesson {
   id: string;
   title: string;

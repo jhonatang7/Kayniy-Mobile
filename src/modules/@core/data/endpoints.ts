@@ -8,4 +8,6 @@ export const API_ENDPOINTS = {
   USER_PROGRESS: '/user-progress',
   USER_MODULE_PROGRESS: '/user-module-progress',
   USER_QUIZ_ATTEMPTS: '/user-quiz-attempts',
+  LIVE_CLASSES: '/live-classes',
+  COMMUNITY: '/communities',
 };

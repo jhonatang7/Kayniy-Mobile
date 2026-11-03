@@ -26,6 +26,12 @@ export const useAllCoursesInfo = () =>
     queryFn: CourseClient.getAllCoursesInfo,
   });
 
+export const useRandomCourses = () =>
+  useQuery({
+    queryKey: [...courseKeys.all, 'random'],
+    queryFn: CourseClient.getRandomCourses,
+  });
+
 export const useCourseInfo = (id: string) =>
   useQuery({
     queryKey: courseKeys.detail(id),
