@@ -31,7 +31,7 @@ export const AuthClient = {
     const response = await apiClient.post<AuthResponse>(`${API_ENDPOINTS.USER}/create-student`, data, {
       headers: addWithoutTokenHeader(),
     });
-    await TokenClient.saveTokens(response.data);
+    //await TokenClient.saveTokens(response.data);
     return response.data;
   },
 
