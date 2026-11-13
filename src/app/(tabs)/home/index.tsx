@@ -1,7 +1,16 @@
 import { AuthService } from '@/src/modules/auth/data/services/auth_service';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { router } from 'expo-router';
-import { ActivityIndicator, FlatList, Linking, Pressable, ScrollView, Text, View } from 'react-native';
+import {
+  ActivityIndicator,
+  FlatList,
+  Linking,
+  Pressable,
+  RefreshControl,
+  ScrollView,
+  Text,
+  View,
+} from 'react-native';
 
 import { Card } from '@/src/modules/@core/view/components';
 import { AuthScreen } from '@/src/modules/auth/view/components/AuthScreen';
@@ -106,7 +115,8 @@ function RecommendedCourseCard({ course, index }: { course: RecommendedCourse; i
 }
 
 export default function HomeScreen() {
-  const { data: user, isLoading: isUserLoading } = AuthService.useMe();
+  const [refreshing, setRefreshing] = useState(false);
+  const { data: user, isLoading: isUserLoading, refetch: refetchUser } = AuthService.useMe();
   const communityId = user?.community?.id;
   const { data: liveClasses, isLoading: areLiveClassesLoading, isError, refetch } =
     useCommunityLiveClasses(communityId);
@@ -114,6 +124,7 @@ export default function HomeScreen() {
     data: community,
     isLoading: isCommunityLoading,
     isError: isCommunityError,
+    refetch: refetchCommunity,
   } = useCommunityDetails(communityId);
   const {
     data: recommendedCourses,
@@ -122,9 +133,28 @@ export default function HomeScreen() {
     refetch: refetchRecommendedCourses,
   } = useRandomCourses();
 
+  const onRefresh = async () => {
+    setRefreshing(true);
+    try {
+      await Promise.all([
+        refetchUser(),
+        refetch(),
+        refetchCommunity(),
+        refetchRecommendedCourses(),
+      ]);
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
   return (
     <AuthScreen scrollable={false}>
-      <ScrollView className="flex-1 bg-slate-50" contentContainerStyle={{ padding: 24, paddingTop: 28, paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        className="flex-1 bg-slate-50"
+        contentContainerStyle={{ padding: 24, paddingTop: 28, paddingBottom: 40 }}
+        showsVerticalScrollIndicator={false}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+      >
         <View className="mb-8 flex-row items-center justify-between rounded-3xl bg-[#1039B8] px-5 py-5">
           <View>
             <Text className="text-xs font-bold uppercase tracking-widest text-blue-100">Aprende, comparte, crece</Text>

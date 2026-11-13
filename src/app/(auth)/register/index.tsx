@@ -6,7 +6,6 @@ import Toast from 'react-native-toast-message';
 
 import { Button, Input } from '@/src/modules/@core/view/components';
 import { AuthService } from '@/src/modules/auth/data/services/auth_service';
-import { useAuth } from '@/src/modules/auth/providers/auth-provider';
 import { AuthBrand } from '@/src/modules/auth/view/components/AuthBrand';
 import { AuthScreen } from '@/src/modules/auth/view/components/AuthScreen';
 import {
@@ -29,7 +28,7 @@ export default function RegisterScreen() {
     },
   });
   const { mutate: register, isPending } = AuthService.useRegister();
-  const { refreshSession } = useAuth();
+  //const { refreshSession } = useAuth();
 
   const onSubmit = (data: RegisterFormData) => {
     Toast.show({
@@ -40,13 +39,13 @@ export default function RegisterScreen() {
 
     register(data, {
       onSuccess: async () => {
-        await refreshSession();
+        //await refreshSession();
         Toast.show({
           type: 'success',
           text1: 'Cuenta creada',
           text2: 'Bienvenido a Kayniy.',
         });
-        router.replace('/(tabs)/home');
+        router.replace('/(auth)/login');
       },
       onError: (error) => {
         Toast.show({
